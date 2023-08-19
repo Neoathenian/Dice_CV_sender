@@ -81,14 +81,15 @@ def Iniciar_driver(url="https://www.dice.com/dashboard/login"):
         EC.presence_of_element_located((By.ID,"password"))
     ).send_keys(Password)
 
+    #Pretty sure this is to click the sign in button
     WebDriverWait(driver,10).until(
         EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-lg btn-block"]'))
     ).click()
 
 
-    WebDriverWait(driver,20).until(
-        EC.presence_of_element_located((By.XPATH,'//div[@class="fe-popup-cross"]'))
-    )
+    #WebDriverWait(driver,20).until(
+    #    EC.presence_of_element_located((By.XPATH,'//div[@class="fe-popup-cross"]'))
+    #)
 
     WebDriverWait(driver,20).until(
         EC.presence_of_element_located((By.XPATH,'//input[@id="typeaheadInput"]'))
@@ -117,7 +118,7 @@ def expand_shadow_element(driver,element):
   return shadow_root
 
 #Una vez en una página de un coso, lo que hace es darle al boton de apply y enviar el CV
-def Apply():
+def Apply(driver):
     sleep(5)
     root=WebDriverWait(driver,10).until(
         EC.presence_of_element_located((By.XPATH,'//div[@class="col-md-7 col-lg-6 hidden-sm hidden-xs applySec"]//dhi-wc-apply-button'))#'//div[@class="hidden-lg hidden-md col-md-12 col-xs-12 applySec lowerApply"]//dhi-wc-apply-button'))
@@ -144,7 +145,7 @@ def Apply():
             EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-split"]'))
         ).click()
     
-def Actualizar_links():
+def Actualizar_links(driver):
     pags_web=[]
     for i in range(2):
         for elem in driver.find_elements(By.XPATH,'//dhi-search-card[@data-cy="search-card"]'):
@@ -172,14 +173,14 @@ def Actualizar_links():
     pags_web.to_csv("pags_web.csv")
 
 
-driver= Iniciar_driver()
-
-#Actualizar_links()
-
-df=pd.read_csv("pags_web.csv")
-for link in df["href"]:
-    driver.get(link)
-    Apply()
+###driver= Iniciar_driver()
+###
+####Actualizar_links()
+###
+###df=pd.read_csv("pags_web.csv")
+###for link in df["href"]:
+###    driver.get(link)
+###    Apply()
     
 ##sleep(5)
 
