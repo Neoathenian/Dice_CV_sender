@@ -169,7 +169,6 @@ def Actualizar_links(driver):
         sleep(5)
     
     pags_web=pd.DataFrame(pags_web,columns=["puesto","posted_date","company","location","employment_type","href"])
-    print(pags_web)
     pags_web.to_csv("pags_web.csv")
 
 
