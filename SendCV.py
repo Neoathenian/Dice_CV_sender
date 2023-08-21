@@ -26,7 +26,8 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import pyautogui
 
-
+#Variable global que usaremos para WebDriverWait
+WAIT_TIME=30
 
 def Descansa():
     x=random()*10
@@ -42,7 +43,7 @@ Info_df=pd.read_csv("password.txt",sep="\t").set_index("Info")
 User=Info_df.at["User","Value"]
 Password=Info_df.at["Password","Value"]
 
-def Iniciar_driver(url="https://www.dice.com/dashboard/login",ultima_semana=False):
+def Iniciar_driver(url="https://www.dice.com/dashboard/login",publicado_ultima_semana=False,publicado_ultimos_3_dias=False,publicado_hoy=False,trabajo_a_buscar="python, Data scientist"):
     options = webdriver.ChromeOptions()
     options.add_argument("start-maximized")
 
@@ -93,7 +94,7 @@ def Iniciar_driver(url="https://www.dice.com/dashboard/login",ultima_semana=Fals
 
     WebDriverWait(driver,20).until(
         EC.presence_of_element_located((By.XPATH,'//input[@id="typeaheadInput"]'))
-    ).send_keys("python, Data scientist\n")
+    ).send_keys(trabajo_a_buscar+"\n")
 
     #Filtramos para solo remoto
     WebDriverWait(driver,5).until(
@@ -103,10 +104,17 @@ def Iniciar_driver(url="https://www.dice.com/dashboard/login",ultima_semana=Fals
     #Tiene que esperar un rato para actualizar los trabajos
     sleep(5)
 
-    if ultima_semana:
+    if publicado_hoy or publicado_ultimos_3_dias or publicado_ultima_semana:
+        if publicado_ultima_semana:
+            cod_num=3
+        if publicado_ultimos_3_dias:
+            cod_num=2
+        if publicado_hoy:
+            cod_num=1
+        
         #Filtramos por trabajos que han aparecido la última semana
         Header=WebDriverWait(driver,20).until(
-                EC.element_to_be_clickable((By.XPATH,'//button[@data-cy-index="3"]'))
+                EC.element_to_be_clickable((By.XPATH,f'//button[@data-cy-index="{cod_num}"]'))
             ).click()
         Descansa()
 
@@ -121,8 +129,100 @@ def Iniciar_driver(url="https://www.dice.com/dashboard/login",ultima_semana=Fals
     WebDriverWait(driver,20).until(
             EC.element_to_be_clickable((By.XPATH,'//button[@aria-label="Filter Search Results by Easy Apply"]'))
         ).click()
+    
+    sleep(5)
 
     return driver
+
+
+def Es_EasyApply(driver):
+    """Miramos en la info de la página de un trabajo si es easy apply o no 
+    (en teoría no necesitamos esto si ya hemos filtrado correctamente)"""
+    texto=driver.find_elements(By.XPATH,'//*[@id="__NEXT_DATA__"]')[0].get_attribute('innerHTML')
+    index=texto.find("easyApply")
+    texto=texto[index:]
+    index2=texto.find(",")
+    texto=texto[:index2]
+
+    if texto.split(":")[1]=="true":
+        return True
+    elif texto.split(":")[1]=="false":
+        return False
+    else:
+        print("ALGO HA IDO MAL MIRANDO SI ES EASY APPLY")
+        return False
+
+def close_tab(driver):
+    """Closes the current tab and creates an empty tab 
+    (por si acaso algun apply nos manda a otra página)"""
+    # Disable the "Leave site?" pop-up
+    driver.execute_script("window.onbeforeunload = null;")
+    
+    driver.execute_script("window.open('', '_blank');")
+    driver.switch_to.window(driver.window_handles[0])
+    driver.close()
+    driver.switch_to.window(driver.window_handles[0])
+
+def Apply(driver,verbose=False):
+    """La función que usaremos para aplicar a un trabajo"""
+    if verbose:
+        print("Trying to apply to job")
+
+    if not Es_EasyApply(driver):
+        if verbose:
+            print("Not Easy Apply")
+        return
+
+
+    Button=WebDriverWait(driver,WAIT_TIME).until(
+            EC.element_to_be_clickable((By.XPATH,'//apply-button-wc'))
+        )
+    #La página siempre empieza con un botón de apply, pero tarda en decidir si va a poner application submitted
+    #Por este motivo, es importante esperar para que se decida (gato de schrodinger)
+    sleep(5)
+    
+    if "Application Submitted" in Button.text:
+        if verbose:
+            print("Already Applied")
+        return
+
+    Button.click()
+    Descansa()
+
+    #The next button
+    WebDriverWait(driver,WAIT_TIME).until(
+            EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-block"]'))
+        ).click()
+
+    Descansa()
+    #We´re gonna check if there are questions
+    Header=WebDriverWait(driver,WAIT_TIME).until(
+            EC.element_to_be_clickable((By.XPATH,'//dhi-seds-typography-heading'))
+        ).text
+    Descansa()
+
+    #If there are questions we´re gonna RUUUUN
+    if "Application Questions" in Header:
+        if verbose:
+            print("Application Questions")
+
+            #Maybe in the future I might save them or I might connect it to an LLM
+            Questions=WebDriverWait(driver, 10).until(
+                EC.visibility_of_all_elements_located((By.XPATH, '//div[@class="screeners-wrapper"]//label'))
+            )
+            for i in range(len(Questions)):
+                print(Questions[i].text)
+        
+        close_tab(driver)
+
+
+        return
+    
+    #The send button
+    WebDriverWait(driver,WAIT_TIME).until(
+            EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-split"]'))
+        ).click()
+    Descansa()
 
 
 
@@ -136,33 +236,7 @@ def expand_shadow_element(driver,element):
   shadow_root = driver.execute_script('return arguments[0].shadowRoot', element)
   return shadow_root
 
-#Una vez en una página de un coso, lo que hace es darle al boton de apply y enviar el CV
-def Apply(driver):
-    sleep(5)
-    root=WebDriverWait(driver,10).until(
-        EC.presence_of_element_located((By.XPATH,'//div[@class="col-md-7 col-lg-6 hidden-sm hidden-xs applySec"]//dhi-wc-apply-button'))#'//div[@class="hidden-lg hidden-md col-md-12 col-xs-12 applySec lowerApply"]//dhi-wc-apply-button'))
-    )
-    shadow_root=expand_shadow_element(driver,root)
 
-    shadow_root=shadow_root.find_element(By.CLASS_NAME,"button-primary")
-    if shadow_root.text!="Applied":
-        shadow_root.click()
-
-        sleep(20)
-        WebDriverWait(driver,10).until(
-            EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-block"]'))
-        ).click()
-        try:
-            WebDriverWait(driver,10).until(
-                EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-block"]'))
-            ).click()
-        except:
-            pass
-
-        #selenium.common.exceptions.TimeoutException: Message:  
-        WebDriverWait(driver,10).until(
-            EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-split"]'))
-        ).click()
     
 def Actualizar_links(driver):
     """Esta función se encarga de actualizar los links de los trabajos para aplicar a ellos
@@ -317,3 +391,31 @@ def Descargar_informacion(driver):
 
 
 
+#Código antiguo usado anteriormente para aplicar a trabajos
+#Una vez en una página de un coso, lo que hace es darle al boton de apply y enviar el CV
+def Apply_old(driver):
+    sleep(5)
+    root=WebDriverWait(driver,10).until(
+        EC.presence_of_element_located((By.XPATH,'//div[@class="col-md-7 col-lg-6 hidden-sm hidden-xs applySec"]//dhi-wc-apply-button'))#'//div[@class="hidden-lg hidden-md col-md-12 col-xs-12 applySec lowerApply"]//dhi-wc-apply-button'))
+    )
+    shadow_root=expand_shadow_element(driver,root)
+
+    shadow_root=shadow_root.find_element(By.CLASS_NAME,"button-primary")
+    if shadow_root.text!="Applied":
+        shadow_root.click()
+
+        sleep(20)
+        WebDriverWait(driver,10).until(
+            EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-block"]'))
+        ).click()
+        try:
+            WebDriverWait(driver,10).until(
+                EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-block"]'))
+            ).click()
+        except:
+            pass
+
+        #selenium.common.exceptions.TimeoutException: Message:  
+        WebDriverWait(driver,10).until(
+            EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-split"]'))
+        ).click()
