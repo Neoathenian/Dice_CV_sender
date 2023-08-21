@@ -42,7 +42,7 @@ Info_df=pd.read_csv("password.txt",sep="\t").set_index("Info")
 User=Info_df.at["User","Value"]
 Password=Info_df.at["Password","Value"]
 
-def Iniciar_driver(url="https://www.dice.com/dashboard/login"):
+def Iniciar_driver(url="https://www.dice.com/dashboard/login",ultima_semana=False):
     options = webdriver.ChromeOptions()
     options.add_argument("start-maximized")
 
@@ -86,7 +86,7 @@ def Iniciar_driver(url="https://www.dice.com/dashboard/login"):
         EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-lg btn-block"]'))
     ).click()
 
-
+    #Creo que esto es de un pop-up que me aparecía por no tener el perfil visible a la gente
     #WebDriverWait(driver,20).until(
     #    EC.presence_of_element_located((By.XPATH,'//div[@class="fe-popup-cross"]'))
     #)
@@ -102,6 +102,25 @@ def Iniciar_driver(url="https://www.dice.com/dashboard/login"):
     ####
     #Tiene que esperar un rato para actualizar los trabajos
     sleep(5)
+
+    if ultima_semana:
+        #Filtramos por trabajos que han aparecido la última semana
+        Header=WebDriverWait(driver,20).until(
+                EC.element_to_be_clickable((By.XPATH,'//button[@data-cy-index="3"]'))
+            ).click()
+        Descansa()
+
+    #Filtremos por Easy Apply, primero hay que abrir esa pestaña
+    Easy_apply_header=WebDriverWait(driver,20).until(
+            EC.element_to_be_clickable((By.XPATH,'//div[@class="facet-group-header ng-tns-c71-9"]'))
+        )
+    if Easy_apply_header.get_attribute("data-cy-accordion-is-expanded")=="false":
+        Easy_apply_header.click()
+
+    #Ahora si le damos al boton de Easy Apply
+    WebDriverWait(driver,20).until(
+            EC.element_to_be_clickable((By.XPATH,'//button[@aria-label="Filter Search Results by Easy Apply"]'))
+        ).click()
 
     return driver
 
