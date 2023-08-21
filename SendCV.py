@@ -165,6 +165,9 @@ def Apply(driver):
         ).click()
     
 def Actualizar_links(driver):
+    """Esta función se encarga de actualizar los links de los trabajos para aplicar a ellos
+        Para ello hay que estar en la páging de dice.com/jobs. Así, lo que hace es modificar el pags_web.csv
+        que es lo que se usará para los links"""
     pags_web=[]
     for i in range(2):
         for elem in driver.find_elements(By.XPATH,'//dhi-search-card[@data-cy="search-card"]'):
@@ -191,25 +194,12 @@ def Actualizar_links(driver):
     pags_web.to_csv("pags_web.csv")
 
 
-###driver= Iniciar_driver()
-###
-####Actualizar_links()
-###
-###df=pd.read_csv("pags_web.csv")
-###for link in df["href"]:
-###    driver.get(link)
-###    Apply()
-    
-##sleep(5)
 
-
-##driver,s = Iniciar_driver("https://www.dice.com/jobs/detail/3d318313fc798cb60ebd59bb3fb8d4cc?searchlink=search%2F%3Fq%3Dpython%2C%2520Data%2520scientist%26countryCode%3DUS%26radius%3D30%26radiusUnit%3Dmi%26page%3D89%26pageSize%3D20%26filters.isRemote%3Dtrue%26language%3Den%26eid%3DS2Q_&searchId=57aba60a-d4ea-41c3-a6cc-0dd321ef27f4")
-###driver,s = Iniciar_driver("https://www.dice.com/jobs/detail/b8f7058f122fd66e409a7868340ef325?searchlink=search%2F%3FcountryCode%3DUS%26radius%3D30%26radiusUnit%3Dmi%26page%3D1%26pageSize%3D20%26language%3Den%26eid%3DS2Q_%2CgKQ_&searchId=b5049236-097d-438d-abbe-99dd32b56e24")
-##sleep(5)
-##
+##Código antiguo
 ###Aceptar Cookies
 ##pyautogui.click(x=997, y=574)
 
+#Código antiguo que creo que es para recolectar información de los trabajos
 ###driver,s = Iniciar_driver("https://www.dice.com")
 ###
 ###pags_web=pd.read_csv("pags_web.csv",index_col=0)["href"]
@@ -247,7 +237,7 @@ def Actualizar_links(driver):
 #driver.quit()
 
 
-
+#Código antiguo para saber algo de lo que se pide en los trabajos
 ##df=pd.read_csv("sentences.csv",index_col=0)
 ##sol=[]
 ##for frase in df["sentences"]:
@@ -263,62 +253,7 @@ def Actualizar_links(driver):
 #
 #
 
-
-#Palabras interesantes
-#counts=counts.drop(["business","experience","work","years","software","development","data","working","knowledge","technical","solutions",
-#                        "strong","skills","ability","using","design","tools","support","systems","engineering","understanding","security",
-#                        "engineer","including","new","services","contract","management","&","all","technologies","technology","by",
-#                        "application","develop","remote","computer","related","job","teams","information","build","platform",
-#                        "required","degree","code","applications","best","requirements","infrastructure","provide","product","building",
-#                        "complex","developing","environment","across","big","communication","full","architecture","performance","like",
-#                        "role","more","w2","more","database","testing","design","lead","enterprise","system","learning","quality",
-#                        "one","their","machine","client","project","agile","and/or","company","practices","good",
-#                        "integration","test","time","processes","developer","position","large","opportunity","implement","help",
-#                        "ensure","within","excellent","into","hands-on","models","based","process","preferred","create","well",
-#                        "multiple","projects","looking","engineers","expertise","etc","customer","able","service","any","implementation",
-#                        "employment","healthcare","high","continuous","production","maintain","deployment","modeling","highly","delivery",
-#                        "plus","advanced","analytical","responsible","products","various","least","familiarity","key","industry",
-#                        "understand","problems","monitoring","drive","both","us","location","architect","processing","what","has",
-#                        "written","equal","responsibilities","candidate","customers","independent","issues","if","improve",
-#                        "deliver","status","but","level","identify","equivalent","change","stack","manage","responsibilities","they",
-#                        "concepts","responsibilities","professional","implementing","field","000","part","collaborate","standards",
-#                        "solution","operations","12","should","qualifications","demonstrated","expert","internal","clients","perform",
-#                        "needs","user","may","financial","need","corp-to-corp","learn","writing","health","experience","also","please",
-#                        "environments",")","(e","members","g","techniques","employer","organization","apply","stakeholders","docker",
-#                        "disability","100%","intelligence","benefits","existing","national","minimum","leading","documentation",
-#                        "leadership","reporting","scalable","modern","employees","scale","model","qualifications","distributed",
-#                        "qualifications","reporting","creating","qualifications","research","gender","skills","applicants","up",
-#                        "candidates","home","operational","seeking","people","some","verbal","control","end","relational","identity",
-#                        "opportunities","communicate","sources","relevant","include","procedures","developers","proficiency","critical",
-#                        "monthsdepends","them","terraform","storage","how","coding","language","participate","make","join","origin",
-#                        "race","providing","closely","rest","hands","following","without","timedepends","without","proven","do","meet",
-#                        "core","planning","life","vision","supporting","warehouse","which","protected","description","orientation","global",
-#                        "problem","patterns","background","maintaining","power","digital","proficient","when","companies","medical",
-#                        "s3","configuration","sexual","religion","focus","different","education","activities","solve","transformation",
-#                        "2","tasks","effectively","source","qualified","functions","functional","reports","capabilities","innovative",
-#                        "veteran","culture","program","assist","analyze","reviews","age","managing","components","current","statistical",
-#                        "compliance","needed","color","open","6","3","experienced","insights","partner","similar","framework","consulting",
-#                        "net","public","successful","most","duration","variety","methodologies","duration","out","access","while",
-#                        "description","duties","hire","computing","solid","areas","results","5","consideration","strategy","databricks",
-#                        "react","users","principles","sets","insurance","tests","collaboration","visualization","value","these",
-#                        "maintenance","enable","write","architectures","regard","sex","available","plan","own","where","deploy","months",
-#                        "extensive","features","risk","training","manager","experiencetravel","jobs","operating","solving","range",
-#                        "administration","its","documentation","document","others","impact","future","independently","review",
-#                        "queries","appropriate","group","travel","ansible","direct","federal","lake","delivering","optimization","great",
-#                        "https","streaming","diverse","inc","s","partners","define","unit","growth","com","would","governance","state",
-#                        "effective","warehousing","networking","desired","external","success","basic","migration","day","lifecycle",
-#                        "contribute","paid","splunk","action","deploying","require","long","tech","methods","provides","problem-solving",
-#                        "mission","decisions","structures","take","making","right","title","receive","+","better","//www","goals","staffing",
-#                        "plans","individual","covid-19","prior","over","efficient","world","domain","designs","o","office","reliability",
-#                        "law","mentor","diversity","term","subject","than","strategic","only",
-#                        "collaborative","certification","microservices","relationships","applicable","vaccination","initiatives","1",
-#                        "query","pay","programs","driven","set","around","roles","works","metrics","growing","specifications",
-#                        "changes","no","standard","nice","integrations","resume","spring","top","availability","cases","here",
-#                        "certifications","you'll","interpersonal","managers","utilizing","exposure","so","local","glue","optimize",
-#                        "automate","datasets","monitor","strategies","committed","mobile","used","salary","additional","focused",
-#                        "offer","improvement","improvements"                        
-#                        ])
-
+#Palabras interesantes encontradas en los trabajos
 #interesting_variables=["cloud","aws","python","sql","azure","analytics","automation","programming","web","science","analysis","pipelines",
 #                        "etl","devops","spark","google","senior","scripting","api","network","languages","platforms","databases",
 #                        "javascript","5+","designing","linux","kubernetes","ci/cd","snowflake","frameworks","deep","java","kafka",
@@ -328,17 +263,8 @@ def Actualizar_links(driver):
 #                        "lambda","mysql","ai","sr","powershell","postgresql","angular","json","ui","unix","10+","c","html","excel",
 #                        "mining","github","perl","gitlab","django","python","selenium","pandas","dashboard","pyspark","qa","mathematics",
 #                        "windows","hive","jira","ruby","4+"]
-#import numpy as np
-#counts=sol.value_counts()
-#counts=counts[4:]
-#import matplotlib.pyplot as plt
-#inic=3000
-#fin=18000
-#a_plot=counts[inic:fin]
-#plt.plot(np.arange(inic,fin),a_plot)
-#plt.show()
-#
 
+#Código antiguo para cargar mas (no se que carga mas :()
 #Busca el boton de "Cargas Mas" y lo pulsa
 def CargarMas(driver):
     Intentos = 0
@@ -374,7 +300,7 @@ def CargarMas(driver):
 
  
 
-
+#Código antiguo tratando de obtener info de los trabajos
 def Descargar_informacion(driver):
     for elem in driver.find_elements(By.XPATH,'//ul[@class="ij-ComponentList"]//li[@class="ij-ComponentList-item"]'):
         try:
@@ -391,68 +317,3 @@ def Descargar_informacion(driver):
 
 
 
-
-
-#Bajar_Hasta_Abajo(driver)
-
-
-
-
-
-
-
-
-
-#Intentos = 0
-#SeEncontro = False
-#
-#while Intentos<50 and not SeEncontro:
-#    print("Bajemos")
-#    
-#    #document.body.scrollHeight
-#    #new_height = driver.execute_script("return document.body.scrollHeight")
-#    #if new_height==last_height:
-#    #    print("TERMINAMOS")
-#    #    quit()
-#
-#    sleep(0.1)
-#    #Buscamos el boton de "Siguiente"
-#    #boton = WebDriverWait(driver,1).until(
-#    #    EC.visibility_of_element_located((By.XPATH,'//span[@class="sui-AtomButton-text"]'))
-#    #    )
-#    #
-#    #print(boton.text)
-#    print("AAAAAAA",flush=True)        
-#    #Que NO se haya encontrado un boton de CargarMas, NO significa que no se hayan cargado mas por haber scrolled down
-#    
-#    
-#    #print(len(driver.find_elements(By.XPATH,'//ul[@class="ij-ComponentList"]//li[@class="ij-ComponentList-item"]')))
-#    #for elem in driver.find_elements(By.XPATH,'//ul[@class="ij-ComponentList"]//li[@class="ij-ComponentList-item"]'):
-#    #    try:
-#    #        print(elem.find_element(By.XPATH,'.//h2//a[@class="ij-OfferCardContent-description-title-link"]').text,flush=True)
-#    #    except:
-#    #        pass
-#    #boton=driver.find_element((By.XPATH,'//span[@class="sui-AtomButton-text"]'))
-#    #boton=driver.find_element(By.XPATH,'//span[@class="sui-AtomButton-text"]/parent::button')
-#    ##boton=WebDriverWait(driver,1).until(
-#    ##    EC.element_to_be_clickable((By.XPATH,'//span[@class="sui-AtomButton-text"]'))
-#    ##)
-#    #boton.click()
-#    #SeEncontro = True
-#    #print("Se Ha encontrado",flush=True)
-#    #try:
-#    #    boton=WebDriverWait(driver,1).until(
-#    #        EC.element_to_be_clickable((By.XPATH,'//span[@class="sui-AtomButton-text"]/../../../button'))
-#    #    )
-#    #    boton.click()
-#    #    SeEncontro = True
-#    #    print("Se Ha encontrado",flush=True)
-#    #except:
-#    #    Intentos+=1
-##
-##print(len(driver.find_elements(By.XPATH,'//ul[@class="ij-ComponentList"]//li[@class="ij-ComponentList-item"]')))
-##for elem in driver.find_elements(By.XPATH,'//ul[@class="ij-ComponentList"]//li[@class="ij-ComponentList-item"]'):
-###    try:
-###        print(elem.find_element(By.XPATH,'.//h2//a[@class="ij-OfferCardContent-description-title-link"]').text)
-###    except:
-##        print("NEXTT")
