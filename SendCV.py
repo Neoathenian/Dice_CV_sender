@@ -164,14 +164,14 @@ def close_tab(driver):
     driver.switch_to.window(driver.window_handles[0])
 
 def Apply(driver,verbose=False):
-    """La función que usaremos para aplicar a un trabajo"""
+    """La función que usaremos para aplicar a un trabajo, devolverá True si se ha aplicado y False si no (para así contar cuantos se han enviando)"""
     if verbose:
         print("Trying to apply to job")
 
     if not Es_EasyApply(driver):
         if verbose:
             print("Not Easy Apply")
-        return
+        return False
 
 
     Button=WebDriverWait(driver,WAIT_TIME).until(
@@ -184,7 +184,7 @@ def Apply(driver,verbose=False):
     if "Application Submitted" in Button.text:
         if verbose:
             print("Already Applied")
-        return
+        return False
 
     Button.click()
     Descansa()
@@ -216,13 +216,14 @@ def Apply(driver,verbose=False):
         close_tab(driver)
 
 
-        return
+        return False
     
     #The send button
     WebDriverWait(driver,WAIT_TIME).until(
             EC.element_to_be_clickable((By.XPATH,'//button[@class="btn btn-primary btn-next btn-split"]'))
         ).click()
     Descansa()
+    return True
 
 
 
